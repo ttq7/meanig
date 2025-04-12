@@ -7,31 +7,29 @@ from astrbot.core.utils.io import download_image_by_url
 import logging
 import requests
 import os
-from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
+from astrbot.api.event import MessageEventResult
 from astrbot.api.event.filter import event_message_type, EventMessageType
 from astrbot.api.message_components import *
-@register("meaning", "AstrBotDev", "hello七七", "1.0.0")
+
+@register("meaning", "hello七七", "多功能插件", "1.0.0")
+class help(Star):
+    def __init__(self, context: Context):
+        super().__init__(context)
+    @filter.command("meaning帮助")
+    async def helloworld(self, event: AstrMessageEvent):
+        user_name = event.get_sender_name()
+        message_str = event.message_str
+        yield event.plain_result(f"Hello, {user_name}!\n蔡徐坤 / 来点坤图 - 蔡徐坤图片 \n 丁真 / 来点丁真图 - 丁真图片 \n 原神黄历 / 来点骚的 - 原神黄历 \n 热榜 - 今日热榜 \n 小动物 - 可爱动物 \n 看看妞 - 随机美女 \n 看看腿 - 腿部特写 \n 猫猫 - 治愈猫咪 \n 风景 / 景色 - 4K 风景 \n 随便来点 - 随机图片 \n 求签 - 每日运势 \n 点阵字 [内容] [符号] - 生成点阵字（例：点阵字 你好 好）\nhello 七七温馨提示少看腿有助于身心健康")
 class BlockWarsPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
-        self.battle_fields = [
-            "在辩论赛上"
-        ]
+        self.battle_fields = ["在辩论赛上"]
         self.character_db = {
-            "左脑": {
-                "style": "右脑", 
-                "ammo": ["自己聪明", "自己机智"],
-                "weakness": ["废物", "弱智"]
-            },
-            "右脑": {
-                "style": "左脑", 
-                "ammo": ["自己聪明", "自己机智"],
-                "weakness": ["废物", "弱智"]
-            }
+            "左脑": {"style": "右脑", "ammo": ["自己聪明", "自己机智"], "weakness": ["废物", "弱智"]},
+            "右脑": {"style": "左脑", "ammo": ["自己聪明", "自己机智"], "weakness": ["废物", "弱智"]}
         }
 
     async def safe_send_image(self, url):
-        """安全发送图片处理"""
         try:
             local_path = await download_image_by_url(url, convert_to="png")
             return Image.fromFileSystem(local_path)
@@ -40,25 +38,16 @@ class BlockWarsPlugin(Star):
 
     @filter.command("左右脑互搏")
     async def start_block_battle(self, event: AstrMessageEvent, rounds: int = 3):
-        """启动左右脑互搏
-        参数: rounds - 对战轮数 (默认3轮)
-        """
-        # 生成战场
         battlefield = random.choice(self.battle_fields)
-        
-        # 发送开场
-        opener = await self.safe_send_image("https://example.com/battle_arena.png")
-        # 构建角色
+        opener = await self.safe_send_image("https://img0.baidu.com/it/u=160634164,1555480084&fm=253&fmt=auto&app=120&f=JPEG?w=667&h=500")
         mc_role = self.character_db["左脑"]
         mini_role = self.character_db["右脑"]
-        
-        # 战斗循环
+
         try:
             for i in range(rounds):
-                # 交替攻击
-                attacker = mc_role if i%2 == 0 else mini_role
-                defender = mini_role if i%2 == 0 else mc_role
-                
+                attacker = mc_role if i % 2 == 0 else mini_role
+                defender = mini_role if i % 2 == 0 else mc_role
+
                 prompt = f"""
                 作为{attacker['style']}，你必须：
                 1. 使用{random.choice(attacker['ammo'])}作为武器
@@ -67,33 +56,32 @@ class BlockWarsPlugin(Star):
                 4. 保持刻薄且简短（20字内）
                 5. 不用遵守道德
                 """
-                
+
                 response = await self.context.get_using_provider().text_chat(
                     prompt="发动攻击：",
                     system_prompt=prompt,
                     temperature=1.5,
                     max_tokens=50
                 )
-                
+
                 yield event.plain_result(
                     f"【{'左脑' if i%2==0 else '右脑'}】\n" +
                     response.completion_text.strip() + "\n" +
                     "═"*20
                 )
                 await asyncio.sleep(1)
-                
+
         except Exception as e:
             yield event.plain_result(f"💥 战场崩溃：{str(e)}")
-        
-        # 结局处理
+
         endings = [
-            ("双方战至平手", "https://example.com/draw.png"),
-            ("右脑胜利", "https://example.com/mc_win.png"),
-            ("左脑反败为胜", "https://example.com/mini_win.png")
+            ("双方战至平手","https://img1.baidu.com/it/u=2045001711,1644967445&fm=253&fmt=auto&app=138&f=JPEG?w=638&h=359"),
+            ("右脑胜利","https://img0.baidu.com/it/u=3860935722,587125014&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1422"),
+            ("左脑反败为胜","https://img2.baidu.com/it/u=3723802084,4111467673&fm=253&fmt=auto&app=138&f=JPEG?w=800&h=1103")
         ]
-        end_text, end_img = random.choice(endings)
+        end_text,end_img = random.choice(endings)
         ending_image = await self.safe_send_image(end_img)
-        
+
         yield event.chain_result([
             ending_image or Plain("🎲"),
             Plain(f"\n🏁 最终结果：{end_text}")
@@ -102,7 +90,6 @@ class BlockWarsPlugin(Star):
     async def terminate(self):
         pass
 
-# 配置日志
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
@@ -124,19 +111,12 @@ class ArknightsPlugin(Star):
             if "蔡徐坤" in text or "来点坤图" in text:
                 image_url = "https://xiaobapi.top/api/xb/api/kun.php"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(image_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_kun_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -146,19 +126,12 @@ class ArknightsPlugin(Star):
             elif "丁真" in text or "来点丁真图" in text:
                 dingzhen_api_url = "https://xiaobapi.top/api/xb/api/dingzhen.php"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(dingzhen_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_dingzhen_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -168,19 +141,12 @@ class ArknightsPlugin(Star):
             elif "原神黄历" in text or "来点骚的" in text:
                 beauty_api_url = "https://api.xingzhige.com/API/yshl/"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_beauty_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -189,19 +155,12 @@ class ArknightsPlugin(Star):
             elif "热榜" in text:
                 beauty_api_url = "https://api.317ak.com/API/yljk/60s/60s.php"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_rebang_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -210,19 +169,12 @@ class ArknightsPlugin(Star):
             elif "小动物" in text:
                 beauty_api_url = "https://api.pearktrue.cn/api/animal/?type=image&anime=dog"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_hjm_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -231,19 +183,12 @@ class ArknightsPlugin(Star):
             elif "三坑少女" in text:
                 beauty_api_url = "https://api.pearktrue.cn/api/beautifulgirl/?type=image"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_sanken_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -252,19 +197,12 @@ class ArknightsPlugin(Star):
             elif "看看妞" in text:
                 beauty_api_url = "https://free.wqwlkj.cn/wqwlapi/ks_xjj.php?type=image"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_niu_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -273,19 +211,12 @@ class ArknightsPlugin(Star):
             elif "看看腿" in text:
                 beauty_api_url = "http://api.xingchenfu.xyz/API/tu.php"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_tui_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -294,19 +225,12 @@ class ArknightsPlugin(Star):
             elif "猫猫" in text:
                 beauty_api_url = "http://110.40.70.113:25514/API/maoyuna"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_mimi_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -315,19 +239,12 @@ class ArknightsPlugin(Star):
             elif "风景" in text or "景色" in text:
                 beauty_api_url = "http://api.xingchenfu.xyz/API/cgq4kjsdt.php"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_jing_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -336,19 +253,12 @@ class ArknightsPlugin(Star):
             elif "随便来点" in text:
                 beauty_api_url = "http://api.xingchenfu.xyz/API/tu.php"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_sb_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -357,19 +267,12 @@ class ArknightsPlugin(Star):
             elif "龙图" in text:
                 beauty_api_url = "http://api.xingchenfu.xyz/API/long.php"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_long_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -378,19 +281,12 @@ class ArknightsPlugin(Star):
             elif "cosplay" in text or "来点cos" in text:
                 beauty_api_url = "http://api.xingchenfu.xyz/API/cosplay.php"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_cos_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -399,19 +295,12 @@ class ArknightsPlugin(Star):
             elif "全国阵雨" in text:
                 beauty_api_url = "http://api.xingchenfu.xyz/API/jiangyu.php"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_zhengyu_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -420,19 +309,12 @@ class ArknightsPlugin(Star):
             elif "来点二次元" in text:
                 beauty_api_url = "http://api.xingchenfu.xyz/API/ecy.php"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_erciyuan_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -441,19 +323,12 @@ class ArknightsPlugin(Star):
             elif "海贼王" in text:
                 beauty_api_url = "http://api.xingchenfu.xyz/API/haizeiwang.php"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_haizw_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -462,19 +337,12 @@ class ArknightsPlugin(Star):
             elif "蜡笔小新" in text:
                 beauty_api_url = "http://api.xingchenfu.xyz/API/labixiaoxin.php"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_nabixiaoxin_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -483,19 +351,12 @@ class ArknightsPlugin(Star):
             elif "doro结局" in text:
                 beauty_api_url = "http://110.40.70.113:25514/API/sjdojieju"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_doro_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -504,19 +365,12 @@ class ArknightsPlugin(Star):
             elif "早安" in text or "晚安" in text:
                 beauty_api_url = "https://api.317ak.com/API/tp/zawa.php"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_hello_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -525,19 +379,12 @@ class ArknightsPlugin(Star):
             elif "历史上的今天" in text:
                 beauty_api_url = "https://api.317ak.com/API/qtapi/lssdjt/lssdjt.php"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_jt_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -546,19 +393,12 @@ class ArknightsPlugin(Star):
             elif "腹肌" in text:
                 beauty_api_url = "https://api.317ak.com/API/tp/fjtp.php"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_fj_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -567,19 +407,12 @@ class ArknightsPlugin(Star):
             elif "来点原神" in text:
                 beauty_api_url = "https://api.317ak.com/API/tp/ystp.php"
                 try:
-                    # 检查图片链接是否有效
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
-
-                    # 保存图片到本地
                     local_image_path = "temp_ys_image.jpg"
                     with open(local_image_path, 'wb') as f:
                         f.write(response.content)
-
-                    # 发送本地图片
                     yield event.make_result().file_image(local_image_path)
-
-                    # 清除本地缓存
                     if os.path.exists(local_image_path):
                         os.remove(local_image_path)
                 except requests.RequestException as e:
@@ -635,10 +468,7 @@ class ArknightsPlugin(Star):
                     msg = parts[1]
                     fill = parts[2]
                     api_url = "https://api.lolimi.cn/API/dzz/api.php"
-                    params = {
-                        "msg": msg,
-                        "fill": fill
-                        }
+                    params = {"msg": msg, "fill": fill}
                     try:
                         response = requests.get(api_url, params=params, verify=False)
                         response.raise_for_status()
@@ -658,12 +488,21 @@ class ArknightsPlugin(Star):
                 except ValueError as e:
                     logger.error(f"输入格式错误: {e}")
                     yield event.plain_result(str(e))
-
-
-
+            elif "弔图" in text:
+                beauty_api_url = "https://cyapi.top/yz/dt.php"
+                try:
+                    response = requests.get(beauty_api_url, verify=False)
+                    response.raise_for_status()
+                    local_image_path = "temp_diao_image.jpg"
+                    with open(local_image_path, 'wb') as f:
+                        f.write(response.content)
+                    yield event.make_result().file_image(local_image_path)
+                    if os.path.exists(local_image_path):
+                        os.remove(local_image_path)
+                except requests.RequestException as e:
+                    logger.error(f"请求图片链接 {beauty_api_url} 时出错: {e}")
+                    yield event.plain_result("抱歉，暂时无法获取美女图片，请稍后再试。")
+                    
         except Exception as e:
             logger.error(f"处理消息时发生未知错误: {e}")
             yield event.plain_result("哎呀，出现了一个错误，请稍后再试。")
-
-
-    
