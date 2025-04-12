@@ -15,7 +15,7 @@ from astrbot.api.message_components import *
 class help(Star):
     def __init__(self, context: Context):
         super().__init__(context)
-    @filter.command("meaning帮助")
+    @filter.command("meanig帮助")
     async def helloworld(self, event: AstrMessageEvent):
         user_name = event.get_sender_name()
         message_str = event.message_str
