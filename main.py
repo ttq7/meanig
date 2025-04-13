@@ -12,14 +12,6 @@ from astrbot.api.event.filter import event_message_type, EventMessageType
 from astrbot.api.message_components import *
 
 @register("meaning", "hello七七", "多功能插件", "1.0.0")
-class help(Star):
-    def __init__(self, context: Context):
-        super().__init__(context)
-    @filter.command("meanig帮助")
-    async def helloworld(self, event: AstrMessageEvent):
-        user_name = event.get_sender_name()
-        message_str = event.message_str
-        yield event.plain_result(f"Hello, {user_name}!\n蔡徐坤 / 来点坤图 - 蔡徐坤图片 \n 丁真 / 来点丁真图 - 丁真图片 \n 原神黄历 / 来点骚的 - 原神黄历 \n 热榜 - 今日热榜 \n 小动物 - 可爱动物 \n 看看妞 - 随机美女 \n 看看腿 - 腿部特写 \n 猫猫 - 治愈猫咪 \n 风景 / 景色 - 4K 风景 \n 随便来点 - 随机图片 \n 求签 - 每日运势 \n 点阵字 [内容] [符号] - 生成点阵字（例：点阵字 你好 好）\nhello 七七温馨提示少看腿有助于身心健康")
 class BlockWarsPlugin(Star):
     def __init__(self, context: Context):
         super().__init__(context)
