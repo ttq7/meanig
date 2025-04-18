@@ -522,7 +522,7 @@ class ArknightsPlugin(Star):
             elif "来点" in text:  
                 search_keyword = text.replace("来点", "").strip()
                 if not search_keyword:
-                    yield event.plain_result("请输入搜索关键词，例如：堆糖搜索 动漫")
+                    yield event.plain_result("请输入搜索关键词，例如：来点 动漫")
                     return  
 
                 api_url = f"https://api.tangdouz.com/dtss.php?nr={search_keyword}"
