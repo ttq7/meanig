@@ -279,7 +279,7 @@ class ArknightsPlugin(Star):
                     logger.error(f"请求图片链接 {beauty_api_url} 时出错: {e}")
                     yield event.plain_result("抱歉，暂时无法获取美女图片，请稍后再试。")
             elif "来点二次元" in text:
-                beauty_api_url = "http://api.xingchenfu.xyz/API/ecy.php"
+                beauty_api_url = "https://api.yuafeng.cn/API/ly/acg.php"
                 try:
                     response = requests.get(beauty_api_url, verify=False)
                     response.raise_for_status()
