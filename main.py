@@ -96,7 +96,7 @@ class help(Star):
 
         user_name = event.get_sender_name()
         message_str = event.message_str
-        yield event.plain_result(f"Hello, {user_name}!\n支持搜图 来点 关键词 格式\n蔡徐坤 / 来点坤图 - 蔡徐坤图片  \n 原神黄历 / 来点骚的 - 原神黄历 \n 热榜 - 今日热榜 \n 小动物 - 可爱动物 \n 看看妞 - 随机美女 \n 看看腿 - 腿部特写 \n 猫猫 - 治愈猫咪 \n 风景 / 景色 - 4K 风景 \n 随便来点 - 随机图片\n doro结局  \n三坑少女\n弔图\n 求签 - 每日运势 \n 点阵字 [内容] [符号] - 生成点阵字（例：点阵字 你好 好）\nhello 七七温馨提示少看腿有助于身心健康")
+        yield event.plain_result(f"Hello, {user_name}!\n支持搜图 来点 关键词 格式\n蔡徐坤 / 来点坤图 - 蔡徐坤图片\腹肌  \n 原神黄历 / 来点骚的 - 原神黄历 \n 热榜 - 今日热榜 \n 小动物 - 可爱动物 \n 看看妞 - 随机美女 \n 看看腿 - 腿部特写 \n 猫猫 - 治愈猫咪 \n 风景 / 景色 - 4K 风景 \n 随便来点 - 随机图片\n doro结局  \n三坑少女\n弔图\n 求签 - 每日运势 \n 点阵字 [内容] [符号] - 生成点阵字（例：点阵字 你好 好）\nhello 七七温馨提示少看腿有助于身心健康")
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
