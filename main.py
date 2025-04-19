@@ -11,7 +11,7 @@ from astrbot.api.event import MessageEventResult
 from astrbot.api.event.filter import event_message_type, EventMessageType
 from astrbot.api.message_components import *
 
-@register("meaning", "hello七七", "多功能插件", "1.2.0")
+@register("meaning", "hello七七", "多功能插件", "1.2.1")
 class BlockWarsPlugin(Star):
     def __init__(self, context: Context, config: dict):
         super().__init__(context)
@@ -96,7 +96,7 @@ class help(Star):
 
         user_name = event.get_sender_name()
         message_str = event.message_str
-        yield event.plain_result(f"Hello, {user_name}!\n支持搜图 来点 关键词 格式\n蔡徐坤 / 来点坤图 - 蔡徐坤图片\腹肌  \n 原神黄历 / 来点骚的 - 原神黄历 \n 热榜 - 今日热榜 \n 小动物 - 可爱动物 \n 看看妞 - 随机美女 \n 看看腿 - 腿部特写 \n 猫猫 - 治愈猫咪 \n 风景 / 景色 - 4K 风景 \n 随便来点 - 随机图片\n doro结局  \n三坑少女\n弔图\n 求签 - 每日运势 \n 点阵字 [内容] [符号] - 生成点阵字（例：点阵字 你好 好）\nhello 七七温馨提示少看腿有助于身心健康")
+        yield event.plain_result(f"Hello, {user_name}!\n支持搜所 搜索+关键词\n天气查询 天气+关键词\n星座查询 星座运势+白羊座\n两个Emoji合成，例如：合成 🤯😭\n支持搜图 来点 关键词 格式\n蔡徐坤 / 来点坤图 - 蔡徐坤图片\腹肌  \n 原神黄历 / 来点骚的 - 原神黄历 \n 热榜 - 今日热榜 \n 小动物 - 可爱动物 \n 看看妞 - 随机美女 \n 看看腿 - 腿部特写 \n 猫猫 - 治愈猫咪 \n 风景 / 景色 - 4K 风景 \n 随便来点 - 随机图片\n doro结局  \n三坑少女\n弔图\n 求签 - 每日运势 \n 点阵字 [内容] [符号] - 生成点阵字（例：点阵字 你好 好）\nhello 七七温馨提示少看腿有助于身心健康")
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -601,7 +601,181 @@ class ArknightsPlugin(Star):
                     
                 finally:
                     if os.path.exists(temp_path):
-                        os.remove(temp_path)     
+                        os.remove(temp_path)
+            elif text.startswith("搜索") or "bing搜索" in text:
+                if not self.config.get("enable_bing_search", True):
+                    return
+                
+                keyword = text.replace("搜索", "").replace(" bing搜索", "").strip()
+                if not keyword:
+                    yield event.plain_result("❓ 请输入搜索关键词，例如：/搜索 人工智能")
+                    return
+
+                search_url = f"https://api.pearktrue.cn/api/bingsearch/?search={keyword}"
+                try:
+                    response = requests.get(search_url, timeout=10)
+                    response.raise_for_status()
+                    result = response.json()
+
+                    if result["code"] != 200:
+                        yield event.plain_result(f"🔍 搜索失败：{result.get('msg', '未知错误')}")
+                        return
+
+                    # 生成聊天记录格式的结果（每条用分隔线分开）
+                    chat_records = [f"📢 搜索关键词：{keyword}\n"]
+                    for idx, item in enumerate(result["data"][:], 1): 
+                        chat_records.append(f"【第{idx}条结果】")
+                        chat_records.append(f"💬 标题：{item['title']}")
+                        chat_records.append(f"📝 摘要：{item['abstract'][:]}")
+                        chat_records.append(f"🔗 链接：\n{item['href']}\n")
+
+                    yield event.plain_result("\n".join(chat_records))
+                    
+                except requests.exceptions.RequestException as e:
+                    logger.error(f"Bing搜索请求失败：{e}")
+                    yield event.plain_result("🔍 网络请求超时，请检查网络后重试~")
+                except ValueError:
+                    logger.error(f"Bing搜索数据解析失败：{response.text}")
+                    yield event.plain_result("🔍 数据格式错误，可能是API返回异常")
+                except Exception as e:
+                    logger.error(f"Bing搜索未知错误：{e}")
+                    yield event.plain_result("🔍 搜索过程中出现意外错误，请稍后再试~")
+                return  
+            elif text.startswith("天气") or " 天气查询" in text:
+                if not self.config.get("enable_weather_query", True):  # 新增配置项
+                    return
+
+                city = text.replace("天气", "").replace("天气查询", "").strip()
+                if not city:
+                    yield event.plain_result("🌤️ 请输入城市名称，例如：天气 深圳")
+                    return
+
+                api_url = f"https://api.tangdouz.com/tq.php?dz={city}&return=json"
+                try:
+                    response = requests.get(api_url, timeout=10)
+                    response.raise_for_status()
+                    result = response.json()
+
+                    if not result.get("city"):
+                        yield event.plain_result(f"🌍 未找到城市：{city} 的天气信息")
+                        return
+
+                    # 格式化天气数据
+                    weather_info = [
+                        f"🌆 城市：{result['city']}",
+                        "—— 未来三天天气预报 ——"
+                    ]
+                    for day in range(1, 4):
+                        data = result.get(str(day), {})
+                        weather_info.append(
+                            f"📅 {data.get('date', '未知日期')}\n"
+                            f"🌞 天气：{data.get('weather', '未知天气')}\n"
+                            f"温度：{data.get('low', '?')} ~ {data.get('high', '?')}"
+                        )
+
+                    yield event.plain_result("\n".join(weather_info))
+                    
+                except requests.exceptions.RequestException as e:
+                    logger.error(f"天气API请求失败：{e}")
+                    yield event.plain_result("🌐 网络请求超时，请检查城市名称或重试~")
+                except ValueError:
+                    logger.error(f"天气数据解析失败：{response.text}")
+                    yield event.plain_result("📊 天气数据格式异常，可能API返回错误")
+                except Exception as e:
+                    logger.error(f"天气查询未知错误：{e}")
+                    yield event.plain_result("🛎️ 天气查询出现意外错误，请稍后再试~")
+                return
+            if text.startswith("星座运势") or " 星座运势查询" in text:
+                if not self.config.get("enable_astrology_image", True):  # 新增配置项
+                    return
+                
+                # 解析星座名（支持 /星座运势 白羊座 或 星座运势查询 金牛座）
+                constellation = text.replace("星座运势", "").replace(" 星座运势查询", "").strip()
+                if not constellation:
+                    yield event.plain_result("🌠 请输入星座名称，例如：星座运势 白羊座")
+                    return
+
+                api_url = f"https://api.317ak.com/API/qtapi/xzys/xzys.php?msg={constellation}"
+                temp_image_path = f"temp_astrology_{constellation}.jpg"  # 临时图片路径
+                
+                try:
+                    response = requests.get(api_url, timeout=15, stream=True)
+                    response.raise_for_status()
+
+                    # 检查是否为图片内容（根据Content-Type判断）
+                    content_type = response.headers.get("Content-Type", "")
+                    if not content_type.startswith("image/"):
+                        yield event.plain_result(f"❌ 接口返回异常，状态码：{response.status_code}")
+                        return
+
+                    # 下载图片并发送
+                    with open(temp_image_path, "wb") as f:
+                        for chunk in response.iter_content(chunk_size=8192):
+                            f.write(chunk)
+                    
+                    yield event.make_result().file_image(temp_image_path)
+                
+                except requests.exceptions.RequestException as e:
+                    logger.error(f"星座运势API请求失败：{e}")
+                    yield event.plain_result("🌐 网络请求超时，请检查星座名称或重试~")
+                except Exception as e:
+                    logger.error(f"星座图片处理失败：{e}")
+                    yield event.plain_result("🛎️ 星座运势图片生成失败，请稍后再试~")
+                finally:
+                    if os.path.exists(temp_image_path):
+                        os.remove(temp_image_path)  # 清理临时文件
+                return
+            elif text.startswith("合成") or " emoji合成" in text:
+                if not self.config.get("enable_emoji_mix", True):
+                    return
+                
+                parts = text.replace("合成", "").replace("合成", "").strip().split()
+                if len(parts) < 2:
+                    yield event.plain_result("🤖 请输入两个Emoji，例如：合成 🤯😭")
+                    return
+                emoji1, emoji2 = parts[:2]
+
+                api_url = f"https://oiapi.net/API/EmojiMix/{emoji1}/{emoji2}"
+                try:
+                    response = requests.get(api_url, timeout=10)
+                    response.raise_for_status()
+                    result = response.json()
+
+                    if result["code"] != 1:
+                        error_msg = {
+                            -1: "❌ 参数不全，请检查是否提供两个Emoji",
+                            -2: "🚫 这两个Emoji不可以合成",
+                            503: "系统维护中，请稍后再试"
+                        }.get(result.get("code"), "未知错误，请重试")
+                        yield event.plain_result(error_msg)
+                        return
+
+                    image_url = result["data"].get("url")
+                    if not image_url:
+                        yield event.plain_result(f"ℹ️ 文本结果：{result['data']}")
+                        return
+
+                    # 下载并发送图片（核心修改部分）
+                    local_image = await download_image_by_url(image_url)
+                    if local_image:
+                        yield event.make_result().file_image(local_image)
+                    else:
+                        yield event.plain_result(
+                            f"🎨 Emoji合成结果：\n"
+                            f"{emoji1} + {emoji2} =\n"
+                            f"查看合成图片：{image_url}"
+                        )
+                    
+                except requests.exceptions.RequestException as e:
+                    logger.error(f"Emoji合成API请求失败：{e}")
+                    yield event.plain_result("🌐 网络请求超时，请检查Emoji格式或重试~")
+                except ValueError:
+                    logger.error(f"Emoji合成数据解析失败：{response.text}")
+                    yield event.plain_result("📊 返回数据格式异常，可能API调整")
+                except Exception as e:
+                    logger.error(f"Emoji合成未知错误：{e}")
+                    yield event.plain_result("🛎️ 合成过程中出现意外错误，请稍后再试~")
+                return
         except Exception as e:
             logger.error(f"处理消息时发生未知错误: {e}")
             yield event.plain_result("哎呀，出现了一个错误，请稍后再试。")
