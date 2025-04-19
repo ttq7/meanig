@@ -733,7 +733,7 @@ class ArknightsPlugin(Star):
                 
                 parts = text.replace("合成", "").replace("合成", "").strip().split()
                 if len(parts) < 2:
-                    yield event.plain_result("🤖 请输入两个Emoji，例如：合成 🤯😭")
+                    yield event.plain_result("🤖 请输入两个Emoji，例如：合成🤯 😭")
                     return
                 emoji1, emoji2 = parts[:2]
 
