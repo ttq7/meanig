@@ -1,0 +1,198 @@
+{
+  "allow_users": {
+    "description": "允许使用插件的用户ID白名单（留空则允许所有用户）",
+    "type": "list",
+    "default": [],
+    "items": {"type": "string"},
+    "hint": "格式示例：[\"123456\", \"789012\"]（不同平台ID格式不同，如QQ为数字，微信为OpenID）"
+  },
+  "deny_users": {
+    "description": "禁止使用插件的用户ID黑名单",
+    "type": "list",
+    "default": [],
+    "items": {"type": "string"},
+    "hint": "格式示例：[\"456789\", \"012345\"]"
+  },
+  "allow_groups": {
+    "description": "允许使用插件的群组ID白名单（留空则允许所有群组）",
+    "type": "list",
+    "default": [],
+    "items": {"type": "string"},
+    "hint": "格式示例：[\"999888\", \"777666\"]（仅群聊生效）"
+  },
+  "deny_groups": {
+    "description": "禁止使用插件的群组ID黑名单",
+    "type": "list",
+    "default": [],
+    "items": {"type": "string"},
+    "hint": "格式示例：[\"888777\", \"666555\"]（仅群聊生效）"
+  },
+  "enable_block_battle": {
+    "description": "启用左右脑互搏功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`左右脑互搏`指令"
+  },
+  "enable_help_command": {
+    "description": "启用帮助指令",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`meaning帮助`指令"
+  },
+  "enable_image_features": {
+    "description": "启用图片相关功能总开关",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用所有图片/图文相关功能"
+  },
+  "enable_dtss_images": {
+    "description": "启用来点搜图功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`来点 [关键词]`搜图功能"
+  },
+  "enable_daily_report": {
+    "description": "启用每日日报功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用每日日报图片和音乐获取"
+  },
+  "enable_yuanshen_calendar": {
+    "description": "启用原神黄历功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`原神黄历/来点骚的`图片获取"
+  },
+  "enable_cai_xukun_images": {
+    "description": "启用蔡徐坤图片功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`蔡徐坤/来点坤图`图片获取"
+  },
+  "enable_hot_list": {
+    "description": "启用今日热榜功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`热榜`图片获取"
+  },
+  "enable_animal_images": {
+    "description": "启用小动物图片功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`小动物`图片获取"
+  },
+  "enable_look_leg_images": {
+    "description": "启用腿部特写功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`看看腿`图片获取"
+  },
+  "enable_cosplay_images": {
+    "description": "启用Cosplay图片功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`cosplay/来点cos`图片获取"
+  },
+  "enable_history_today": {
+    "description": "启用历史上的今天功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`历史上的今天`图片获取"
+  },
+  "enable_diandianzi": {
+    "description": "启用点阵字功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`点阵字`文本生成功能"
+  },
+  "enable_cat_images": {
+    "description": "启用治愈猫咪功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`猫猫`图片获取"
+  },
+  "enable_scenery_images": {
+    "description": "启用4K风景功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`风景/景色`图片获取"
+  },
+  "enable_meizi_images": {
+    "description": "启用弔图功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用弔图图片获取"
+  },
+  "enable_sankens_images": {
+    "description": "启用三坑少女功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用三坑少女图片获取"
+  },
+  "enable_see_niuniu_images": {
+    "description": "启用看看妞功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用看看妞图片获取"
+  },
+  "enable_random_images": {
+    "description": "启用随机图片功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`随便来点`图片获取"
+  },
+  "enable_long_images": {
+    "description": "启用龙图功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用龙图获取"
+  },
+  "enable_erciyuan_images": {
+    "description": "启用二次元图片功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`来点二次元`图片获取"
+  },
+  "enable_onepiece_images": {
+    "description": "启用海贼王图片功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`海贼王`图片获取"
+  },
+  "enable_luxun_images": {
+    "description": "启用蜡笔小新图片功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用蜡笔小新图获取"
+  },
+  "enable_doro_images": {
+    "description": "启用doro结局图片功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用doro图获取"
+  },
+  "enable_greetings_images": {
+    "description": "启用早安晚安问候图功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`早安/晚安`图片获取"
+  },
+  "enable_abs_images": {
+    "description": "启用腹肌图片功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`腹肌`图片获取"
+  },
+  "enable_ys_images": {
+    "description": "启用原神图片功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`来点原神`图片获取"
+  },
+  "enable_qiuqian": {
+    "description": "启用求签功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`求签`文本结果获取"
+  }
+}
