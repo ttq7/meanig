@@ -580,7 +580,7 @@ class ArknightsPlugin(Star):
                     return  
                 search_keyword = text.replace("来点", "").strip()
                 if not search_keyword:
-                    yield event.plain_result("请输入搜索关键词，例如：堆糖搜索 动漫")
+                    yield event.plain_result("请输入搜索关键词，例如：来点 动漫")
                     return  # ✅ 修复此处！
 
                 api_url = f"https://api.tangdouz.com/dtss.php?nr={search_keyword}"
@@ -610,7 +610,7 @@ class ArknightsPlugin(Star):
                 
                 keyword = text.replace("搜索", "").replace(" bing搜索", "").strip()
                 if not keyword:
-                    yield event.plain_result("❓ 请输入搜索关键词，例如：/搜索 人工智能")
+                    yield event.plain_result("❓ 请输入搜索关键词，例如：搜索 人工智能")
                     return
 
                 search_url = f"https://api.pearktrue.cn/api/bingsearch/?search={keyword}"
