@@ -1,4 +1,3 @@
-https://access-counter.vercel.app/api/counter?name=ttq7r&theme=001&length=7
 # 🎮 meanig v1.2.0
   
 # 更新了注册插件配置(beta)
