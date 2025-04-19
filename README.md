@@ -1,8 +1,3 @@
-<div align="center">
-
-[![Moe Counter](https://count.getloli.com/get/@GalChat?theme=moebooru)](https://github.com/ttq7/meanig/)
-
-</div>
 # 🎮 meanig v1.2.0
   
 # 更新了注册插件配置(beta)
