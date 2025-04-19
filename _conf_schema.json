@@ -194,5 +194,29 @@
     "type": "bool",
     "default": true,
     "hint": "关闭后将禁用`求签`文本结果获取"
+  },
+  "enable_bing_search": {
+    "description": "启用bing搜索功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`必应搜索/bing搜索`文本结果获取"
+  },
+  "enable_emoji_mix": {
+    "description": "启用emoji合成功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用emoji合成结果获取"
+  },
+  "nable_astrology_images": {
+    "description": "启用星座图片功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`星座`图片获取"
+  },
+  "enable_weather_query": {
+    "description": "启用天气查询功能",
+    "type": "bool",
+    "default": true,
+    "hint": "关闭后将禁用`天气查询`文本结果获取"
   }
 }
