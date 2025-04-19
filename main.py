@@ -451,6 +451,8 @@ class ArknightsPlugin(Star):
                     yield event.plain_result("抱歉，暂时无法获取求签结果，请稍后再试。")
             elif "你喜欢我吗" in text:
                 yield event.plain_result("https://file.tangdouz.com/love/")
+            elif "ciallo" in text:
+                yield event.plain_result("http://file.tangdouz.com/ciallo/")
             elif "每日日报" in text:
                 if not self.config.get("enable_daily_report", True):
                     return                
@@ -685,7 +687,7 @@ class ArknightsPlugin(Star):
                     logger.error(f"天气查询未知错误：{e}")
                     yield event.plain_result("🛎️ 天气查询出现意外错误，请稍后再试~")
                 return
-            if text.startswith("星座运势") or " 星座运势查询" in text:
+            elif text.startswith("星座运势") or " 星座运势查询" in text:
                 if not self.config.get("enable_astrology_image", True):  # 新增配置项
                     return
                 
