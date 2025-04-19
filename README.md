@@ -1,8 +1,6 @@
-</div>
-
 <div align="center">
 
-<img src="https://access-counter.vercel.app/api/counter?name=ttq7&theme=001&length=7" />
+![:name](https://count.getloli.com/@llmgo?name=ttq7&theme=miku&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=auto)
 
 </div>
 # 🎮 meanig v1.2.0
