@@ -1,7 +1,7 @@
 <div align="center">
     <img src="https://count.getloli.com/@llmgo?name=ttq7&theme=miku&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=auto" alt="图片">
 </div>
-# 🎮 meanig v1.2.0
+# 🎮 meanig v1.2.1
   
 # 更新了注册插件配置(beta)更多搜索功能
 
