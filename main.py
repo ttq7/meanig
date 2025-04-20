@@ -10,8 +10,8 @@ import os
 from astrbot.api.event import MessageEventResult
 from astrbot.api.event.filter import event_message_type, EventMessageType
 from astrbot.api.message_components import *
-
-@register("meaning", "hello七七", "多功能插件", "1.2.1")
+import re
+@register("meaning", "hello七七", "多功能插件", "1.2.2")
 class BlockWarsPlugin(Star):
     def __init__(self, context: Context, config: dict):
         super().__init__(context)
@@ -727,16 +727,17 @@ class ArknightsPlugin(Star):
                     if os.path.exists(temp_image_path):
                         os.remove(temp_image_path)  # 清理临时文件
                 return
-            elif text.startswith("合成") or " emoji合成" in text:
+            elif text.startswith("合成"): 
                 if not self.config.get("enable_emoji_mix", True):
                     return
-                
-                parts = text.replace("合成", "").replace("合成", "").strip().split()
-                if len(parts) < 2:
-                    yield event.plain_result("🤖 请输入两个Emoji，例如：合成🤯 😭")
-                    return
-                emoji1, emoji2 = parts[:2]
 
+                emojis = re.findall(
+                    r'[\U0001F600-\U0001F9FF\u263a-\U0001F645]',  # Emoji正则匹配
+                    text[2:]  # 去除开头的"合成"二字
+                )
+                
+                
+                emoji1, emoji2 = emojis[:2]  # 固定取前两个
                 api_url = f"https://oiapi.net/API/EmojiMix/{emoji1}/{emoji2}"
                 try:
                     response = requests.get(api_url, timeout=10)
@@ -745,10 +746,7 @@ class ArknightsPlugin(Star):
 
                     if result["code"] != 1:
                         error_msg = {
-                            -1: "❌ 参数不全，请检查是否提供两个Emoji",
-                            -2: "🚫 这两个Emoji不可以合成",
-                            503: "系统维护中，请稍后再试"
-                        }.get(result.get("code"), "未知错误，请重试")
+                        }.get(result.get("code"))
                         yield event.plain_result(error_msg)
                         return
 
@@ -770,13 +768,10 @@ class ArknightsPlugin(Star):
                     
                 except requests.exceptions.RequestException as e:
                     logger.error(f"Emoji合成API请求失败：{e}")
-                    yield event.plain_result("🌐 网络请求超时，请检查Emoji格式或重试~")
                 except ValueError:
                     logger.error(f"Emoji合成数据解析失败：{response.text}")
-                    yield event.plain_result("📊 返回数据格式异常，可能API调整")
                 except Exception as e:
                     logger.error(f"Emoji合成未知错误：{e}")
-                    yield event.plain_result("🛎️ 合成过程中出现意外错误，请稍后再试~")
                 return
         except Exception as e:
             logger.error(f"处理消息时发生未知错误: {e}")
