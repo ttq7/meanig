@@ -117,12 +117,6 @@
     "default": true,
     "hint": "关闭后将禁用`风景/景色`图片获取"
   },
-  "enable_meizi_images": {
-    "description": "启用弔图功能",
-    "type": "bool",
-    "default": true,
-    "hint": "关闭后将禁用弔图图片获取"
-  },
   "enable_sankens_images": {
     "description": "启用三坑少女功能",
     "type": "bool",
