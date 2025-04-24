@@ -14,7 +14,7 @@ import re
 
 logger = logging.getLogger(__name__)
 
-@register("meaning", "hello七七", "多功能插件", "2.0.0")
+@register("meaning", "hello七七", "多功能插件", "2.0.1")
 class BlockWarsPlugin(Star):
     def __init__(self, context: Context, config: dict):
         super().__init__(context)
@@ -647,7 +647,8 @@ class ArknightsPlugin(Star):
                     temp_path = f"temp_dtss_image_{search_keyword}.jpg"
                     try:
                         async with session.get(api_url) as response:
-                            image_url = await response.text().strip()
+                            image_url = await response.text()
+                            image_url =image_url.strip()
                             async with session.get(image_url) as img_response:
                                 img_content = await img_response.read()
                                 with open(temp_path, 'wb') as f:
