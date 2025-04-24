@@ -2,9 +2,9 @@
     <img src="https://count.getloli.com/@llmgo?name=ttq7&theme=miku&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=auto" alt="图片">
 </div>
 
-# 🎮 meanig v2.0.0
+# 🎮 meanig v2.0.1
   
-# 更新改为异步废弃弔图功能
+# 更新修复搜图bug
 
 ### 一、图片工具集（关键词触发）  
 
